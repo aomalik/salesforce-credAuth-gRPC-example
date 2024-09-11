@@ -1,9 +1,10 @@
+require('dotenv').config();
 const axios = require('axios');
 
-// Salesforce credentials (replace with your Connected App details)
-const CLIENT_ID = '3MVG9k02hQhyUgQAt35eWv00lVOwIDdu.8MJC3p9BmSRTQKcIm.en23XnvHB5RwHVZX.3kHN2c4YchwtweThB';
-const CLIENT_SECRET = 'F37279927523D6A321C460D7A6DFB69E31920D755309DC672FDED8D4B304673A';
-const SALESFORCE_LOGIN_URL = 'https://saasfactory-dev-ed.develop.my.salesforce.com';
+// Salesforce credentials (now using environment variables)
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const SALESFORCE_LOGIN_URL = process.env.SALESFORCE_LOGIN_URL;
 const AUTH_URL = `${SALESFORCE_LOGIN_URL}/services/oauth2/token`;
 
 // Function to authenticate using client_credentials
