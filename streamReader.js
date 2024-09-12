@@ -3,6 +3,7 @@ const protoLoader = require("@grpc/proto-loader");
 const { authenticate } = require("./auth");
 const path = require("path");
 
+const SALESFORCE_PUBSUB_API_URL = process.env.SALESFORCE_PUBSUB_API_URL;
 // Path to your proto file (you need to download the relevant Pub/Sub proto files from Salesforce)
 const PROTO_PATH = path.join(__dirname, "/proto/pubsub.proto");
 
@@ -22,20 +23,13 @@ async function subscribeToEvents(accessToken, instanceUrl) {
   console.log("Subscribing to events...");
 
   const client = new pubsubProto.PubSub(
-    `${instanceUrl}:7443`,
+    SALESFORCE_PUBSUB_API_URL,
     grpc.credentials.createSsl()
   );
 
   const metadata = new grpc.Metadata();
-  //metadata.add("authorization", `Bearer ${accessToken}`);
-  metadata.add(
-    "accesstoken",
-    "00DQy00000BMqWH!AQEAQAdkyyiyuVzLi2q4iZcyWtH3F0aoge1KszqCZt81hcl7HT_St9J82NQBp360Yd2maOq3qZEAHUUkci9sTY5z.m0I3chI"
-  );
-  metadata.add(
-    "instanceurl",
-    "https://saasfactory-dev-ed.develop.my.salesforce.com"
-  );
+  metadata.add("accesstoken", accessToken);
+  metadata.add("instanceurl", instanceUrl);
   metadata.add("tenantid", "00DQy00000BMqWHMA1");
 
   const subscriptionRequest = {
@@ -77,7 +71,7 @@ async function subscribeToEvents(accessToken, instanceUrl) {
 authenticate()
   .then(({ access_token, instance_url }) => {
     try {
-      subscribeToEvents(access_token, "api.pubsub.salesforce.com");
+      subscribeToEvents(access_token, instance_url);
       console.log("Subscribed to events successfully.");
     } catch (error) {
       console.error("Error subscribing to events:", error);
