@@ -20,36 +20,56 @@ const pubsubProto = grpc.loadPackageDefinition(packageDefinition).eventbus.v1;
 // Function to subscribe to events
 async function subscribeToEvents(accessToken, instanceUrl) {
   console.log("Subscribing to events...");
+
   const client = new pubsubProto.PubSub(
     `${instanceUrl}:7443`,
     grpc.credentials.createSsl()
   );
+
   const metadata = new grpc.Metadata();
   //metadata.add("authorization", `Bearer ${accessToken}`);
   metadata.add(
     "accesstoken",
     "00DQy00000BMqWH!AQEAQAdkyyiyuVzLi2q4iZcyWtH3F0aoge1KszqCZt81hcl7HT_St9J82NQBp360Yd2maOq3qZEAHUUkci9sTY5z.m0I3chI"
   );
-  metadata.add("instanceurl", instanceUrl);
+  metadata.add(
+    "instanceurl",
+    "https://saasfactory-dev-ed.develop.my.salesforce.com"
+  );
   metadata.add("tenantid", "00DQy00000BMqWHMA1");
+
   const subscriptionRequest = {
     topic_name: "/event/ServiceAppointmentCreatedEvent__e",
     num_requested: 10, // Number of events you want to receive at once
   };
-  //client.metadata = metadata;
-  console.log("metadata", metadata);
-  const stream = client.Subscribe(subscriptionRequest);
 
-  stream.on("data", (response) => {
-    console.log("Received event:", response);
-  });
+  client.GetTopic(subscriptionRequest, metadata, (err, response) => {
+    console.log("err", err);
+    console.log("response", response);
+    if (err) {
+      console.error(
+        "Error subscribing to events:",
+        JSON.stringify(err, null, 2)
+      );
+      return;
+    }
+    const stream = client.Subscribe(metadata);
 
-  stream.on("error", (err) => {
-    console.error("Error subscribing to events:", JSON.stringify(err, null, 2));
-  });
+    stream.on("data", (response) => {
+      console.log("Received event:", response);
+    });
+    stream.on("error", (err) => {
+      console.error(
+        "Error subscribing to events:",
+        JSON.stringify(err, null, 2)
+      );
+    });
 
-  stream.on("end", () => {
-    console.log("Event stream ended.");
+    stream.on("end", () => {
+      console.log("Event stream ended.");
+    });
+
+    stream.write(subscriptionRequest);
   });
 }
 
