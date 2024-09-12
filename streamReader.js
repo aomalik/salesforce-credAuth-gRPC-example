@@ -4,6 +4,7 @@ const { authenticate } = require("./auth");
 const path = require("path");
 
 const SALESFORCE_PUBSUB_API_URL = process.env.SALESFORCE_PUBSUB_API_URL;
+const TENANT_ID = process.env.TENANT_ID;
 // Path to your proto file (you need to download the relevant Pub/Sub proto files from Salesforce)
 const PROTO_PATH = path.join(__dirname, "/proto/pubsub.proto");
 
@@ -30,7 +31,7 @@ async function subscribeToEvents(accessToken, instanceUrl) {
   const metadata = new grpc.Metadata();
   metadata.add("accesstoken", accessToken);
   metadata.add("instanceurl", instanceUrl);
-  metadata.add("tenantid", "00DQy00000BMqWHMA1");
+  metadata.add("tenantid", TENANT_ID);
 
   const subscriptionRequest = {
     topic_name: "/event/ServiceAppointmentCreatedEvent__e",
