@@ -2,8 +2,11 @@
   "name": "salesforce-app",
   "version": "1.0.0",
   "main": "index.js",
+   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "node streamReader.js"
+
   },
   "keywords": [],
   "author": "",
@@ -13,6 +16,7 @@
     "@grpc/grpc-js": "^1.11.2",
     "@grpc/proto-loader": "^0.7.13",
     "axios": "^1.7.7",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "salesforce-pubsub-api-client": "^4.1.3"
   }
 }
