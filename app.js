@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { authenticate } = require('./auth');
+import axios from "axios";
+import { authenticate } from "./auth.js";
 
 // Function to query Salesforce
 async function querySalesforce(accessToken, instanceUrl) {
@@ -12,15 +12,20 @@ async function querySalesforce(accessToken, instanceUrl) {
       },
     });
 
-    console.log('Salesforce Query Response:', response.data);
+    console.log("Salesforce Query Response:", response.data);
   } catch (error) {
-    console.error('Error querying Salesforce:', error.response?.data || error.message);
+    console.error(
+      "Error querying Salesforce:",
+      error.response?.data || error.message
+    );
   }
 }
 
 // Authenticate and query Salesforce
-authenticate().then(({ access_token, instance_url }) => {
-  querySalesforce(access_token, instance_url);
-}).catch(error => {
-  console.error('Authentication failed:', error);
-});
+authenticate()
+  .then(({ access_token, instance_url }) => {
+    querySalesforce(access_token, instance_url);
+  })
+  .catch((error) => {
+    console.error("Authentication failed:", error);
+  });
