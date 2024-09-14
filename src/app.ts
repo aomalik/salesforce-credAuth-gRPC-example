@@ -1,8 +1,9 @@
-import axios from "axios";
-import { authenticate } from "./auth.js";
+import axios from 'axios';
+import { isError, isAxiosError } from './utils/type-guards';
+import { authenticate } from './auth.js';
 
 // Function to query Salesforce
-async function querySalesforce(accessToken, instanceUrl) {
+async function querySalesforce(accessToken: string, instanceUrl: string) {
   try {
     const queryEndpoint = `${instanceUrl}/services/data/v57.0/query?q=SELECT+Name+FROM+Account+LIMIT+5`;
 
@@ -12,11 +13,15 @@ async function querySalesforce(accessToken, instanceUrl) {
       },
     });
 
-    console.log("Salesforce Query Response:", response.data);
+    console.log('Salesforce Query Response:', response.data);
   } catch (error) {
     console.error(
-      "Error querying Salesforce:",
-      error.response?.data || error.message
+      'Error querying Salesforce:',
+      isError(error)
+        ? error.message
+        : isAxiosError(error)
+          ? error.response?.data
+          : error, // Error handling
     );
   }
 }
@@ -27,5 +32,5 @@ authenticate()
     querySalesforce(access_token, instance_url);
   })
   .catch((error) => {
-    console.error("Authentication failed:", error);
+    console.error('Authentication failed:', error);
   });
