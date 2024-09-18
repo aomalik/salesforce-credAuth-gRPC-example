@@ -40,6 +40,10 @@ export const workOrderReadyFlow = async (
     const request = await createJob(data);
     const job = await request(sdk);
 
+    if (!job) {
+      throw new Error('Error creating job');
+    }
+
     await createJobShare([job.id], true, sdk);
 
     console.log('Starting work order:', request);

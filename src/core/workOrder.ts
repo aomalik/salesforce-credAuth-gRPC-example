@@ -19,6 +19,27 @@ const workOrderSchema = z.object({
   workOrderNumber: z.string().nonempty('Work Order Number cannot be empty'), // WorkOrderNumber__c
 });
 
+const Scalars = {
+  ID: z.string(),
+  String: z.string(),
+};
+
+// Define the JobShare schema
+const JobShareSchema = z.object({
+  id: Scalars.ID, // id is a string (based on the ID scalar)
+  shareLink: Scalars.String, // shareLink is a string
+});
+
+// Define the JobShareResult schema
+const JobShareResultSchema = z.object({
+  jobShare: JobShareSchema.optional(), // jobShare is optional, based on Maybe<T>
+});
+
+// Optionally, if you need to validate the CreateJobShareMutation result
+const CreateJobShareMutationSchema = z.object({
+  createJobShare: JobShareResultSchema,
+});
+
 const createJobInputSchema = z.object({
   newJob: workOrderSchema,
 });
@@ -30,7 +51,7 @@ const shareEntireJobSchema = z.boolean();
 
 type SDKProps = ReturnType<typeof getSdk>;
 
-type RequestCreateJob = (sdk: SDKProps) => void;
+type RequestCreateJob = (sdk: SDKProps) => Promise<Job>;
 
 export const createJob = async (
   workOrder: WorkOrderProps,
@@ -105,10 +126,22 @@ export const createJobShare = async (
   console.log('Creating custom job share', input);
 
   const result = sdk.CreateJobShare({ input });
-  if (!result.createJobShare.jobShare) {
+  const validation = CreateJobShareMutationSchema.safeParse(result);
+
+  if (!validation.success) {
+    throw new Error(
+      'Invalid response from CreateJobShare: ' +
+        validation.error.errors.map((e) => e.message).join(', '),
+    );
+  }
+
+  const { jobShare } = validation.data.createJobShare;
+
+  if (!jobShare) {
     throw new Error('JobShare creation failed');
   }
-  return result.createJobShare.jobShare;
+
+  return jobShare;
 };
 
 export const updateWorkOrderWithXOiShareLink = async () => {
