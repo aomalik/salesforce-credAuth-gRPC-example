@@ -1,0 +1,6 @@
+fragment JobConnectionFields on JobConnection {
+  items {
+    ...JobFields
+  }
+  nextToken
+}

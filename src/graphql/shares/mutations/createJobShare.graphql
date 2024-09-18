@@ -1,0 +1,5 @@
+mutation CreateJobShare($input: CreateJobShareInput!) {
+  createJobShare(input: $input) {
+    ...JobShareResultFields
+  }
+}

@@ -1,0 +1,5 @@
+fragment JobShareResultFields on JobShareResult {
+  jobShare {
+    ...JobShareFields
+  }
+}

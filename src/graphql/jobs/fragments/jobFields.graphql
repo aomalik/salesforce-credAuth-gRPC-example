@@ -1,0 +1,48 @@
+fragment JobFields on Job {
+  id
+  externalId
+  createdAt
+  createdBy
+  updatedAt
+  completedAt
+  completedBy
+  customerName
+  customerEmail
+  internalNotificationContacts {
+    email
+    notify_of_events
+  }
+  jobLocation
+  workOrderNumber
+  assigneeIds
+  internalNote {
+    text
+  }
+  label
+  tags
+  publicTags
+  tagSuggestions
+  deepLinks {
+    visionWeb {
+      viewJob {
+        url
+      }
+    }
+    visionMobile {
+      viewJob {
+        url
+      }
+      editJob {
+        url
+      }
+      jobLocationActivitySearch {
+        url
+      }
+      contributeToJob {
+        url
+      }
+    }
+  }
+  workTypeIds
+  externalAppUrl
+}

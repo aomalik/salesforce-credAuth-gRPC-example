@@ -1,0 +1,5 @@
+mutation AddWorkflow($input: AddWorkflowInput!) {
+  addWorkflow(input: $input) {
+    workflowJobId
+  }
+}

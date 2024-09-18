@@ -1,5 +1,7 @@
 import PubSubApiClient from 'salesforce-pubsub-api-client';
 import { z } from 'zod';
+import { workOrderReadyFlow } from './workOrderReadyFlow';
+import { payloadWorkOrder } from './mockdata/salesforce';
 
 const eventPayloadSchema = z.object({
   replayId: z.number(),
@@ -47,15 +49,18 @@ async function run() {
 
       // Safely log event as a JSON string
 
-      console.log(
-        JSON.stringify(
-          event,
-          (key, value) =>
-            /* Convert BigInt values into strings and keep other types unchanged */
-            typeof value === 'bigint' ? value.toString() : value,
-          2,
-        ),
-      );
+      // console.log(
+      //   JSON.stringify(
+      //     event,
+      //     (key, value) =>
+      //       /* Convert BigInt values into strings and keep other types unchanged */
+      //       typeof value === 'bigint' ? value.toString() : value,
+      //     2,
+      //   ),
+      // );
+      console.log('payloadWorkOrder:', payloadWorkOrder);
+      //TODO: replace for event.payload
+      workOrderReadyFlow(payloadWorkOrder);
     });
   } catch (error) {
     console.error(error);

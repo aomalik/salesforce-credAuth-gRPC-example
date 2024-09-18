@@ -1,0 +1,4 @@
+fragment JobShareFields on JobShare {
+  id
+  shareLink
+}

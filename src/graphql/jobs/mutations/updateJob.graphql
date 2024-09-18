@@ -1,0 +1,7 @@
+mutation UpdateJob($input: UpdateJobInput!) {
+  updateJob(input: $input) {
+    job {
+      ...JobFields
+    }
+  }
+}

@@ -1,0 +1,7 @@
+query ListJobs($input: ListJobsInput!) {
+  listJobs(input: $input) {
+    jobConnection {
+      ...JobConnectionFields
+    }
+  }
+}

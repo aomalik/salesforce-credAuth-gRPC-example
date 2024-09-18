@@ -1,0 +1,16 @@
+query ListDocumentation($input: ListDocumentationInput!) {
+  listDocumentation(input: $input) {
+    documentationConnection {
+      nextToken
+      items {
+        jobId
+        workflowName
+        workflowLabel
+        workflowJobId
+        traits
+        stepIndex
+        stepTraits
+      }
+    }
+  }
+}
