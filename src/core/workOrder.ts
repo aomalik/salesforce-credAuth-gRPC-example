@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AxiosInstance } from 'axios';
 import {
   WorkOrderReadyEvent as WorkOrderProps,
   WorkOrderReadyEventSchema,
@@ -19,6 +20,22 @@ const workOrderSchema = z.object({
   customerName: z.string().nonempty('Customer name is required'), // Customer_Name__c
   workOrderNumber: z.string().nonempty('Work Order Number cannot be empty'), // WorkOrderNumber__c
 });
+
+const workOrderSchemaToSF = z.object({
+  JobId__c: z.string().nonempty('JobId__c is required'), // JobId must be a non-empty string
+  ContributeToJobDeepLinkUrl__c: z
+    .string()
+    .url('ContributeToJobDeepLinkUrl__c must be a valid URL')
+    .optional(), // must be a valid URL
+  EntireJobShareLinkUrl__c: z
+    .string()
+    .url('EntireJobShareLinkUrl__c must be a valid URL'), // must be a valid URL
+  CustomerJobShareLinkUrl__c: z
+    .string()
+    .url('CustomerJobShareLinkUrl__c must be a valid URL'), // must be a valid URL
+});
+
+type WorkOrderSF = z.infer<typeof workOrderSchemaToSF>;
 
 const Scalars = {
   ID: z.string(),
@@ -197,6 +214,40 @@ export const createJobShare = async (
   }
 };
 
-export const updateWorkOrderWithXOiShareLink = async () => {
+export const updateWorkOrderWithXOiShareLink = async (
+  workOrderSF: WorkOrderSF,
+  axiosInstace: AxiosInstance,
+) => {
+  const workOrderValidation = workOrderSchemaToSF.safeParse(workOrderSF);
+
+  if (!workOrderValidation.success) {
+    throw new Error(
+      'Invalid work order data' +
+        workOrderValidation.error.errors.map((e) => e.message).join(', '),
+    );
+  }
+
   console.log('Updating work order with XOi share link');
+
+  return async (): Promise<void> => {
+    console.log('Work order updated:', workOrderSF);
+    try {
+      const response = await axiosInstace.patch(
+        `/WorkOrder/${workOrderSF.JobId__c}`,
+        workOrderSF,
+      );
+
+      if (response.status === 204) {
+        console.log('WorkOrder updated successfully in Salesforce');
+      } else {
+        console.error(
+          'Failed to update WorkOrder in Salesforce',
+          response.data,
+        );
+      }
+    } catch (error) {
+      console.error('::::::::Error updating work order in Salesforce:', error);
+      throw error;
+    }
+  };
 };
