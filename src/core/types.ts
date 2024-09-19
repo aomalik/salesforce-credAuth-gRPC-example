@@ -98,7 +98,11 @@ export type TestResponse = {
 export const WorkOrderReadyEventSchema = z.object({
   attributes: z.object({
     type: z.string(), // The platform event type, e.g., "TCSNALA_Workorder_XOi__e"
-    url: z.string().url(), // URL for accessing the event
+    url: z
+      .string()
+      .refine((url) => /^https?:\/\//.test(url) || url.startsWith('/'), {
+        message: 'Invalid URL: must be a fully qualified or relative URL',
+      }), // Allow both full and relative URLs
   }),
   TCSNALA_Customer_Name__c: z.string(), // Customer name, e.g., "Kwik Trip"
   TCSNALA_Job_Location_Street__c: z.string(), // Job location street address
@@ -118,3 +122,54 @@ export const WorkOrderReadyEventSchema = z.object({
 });
 
 export type WorkOrderReadyEvent = z.infer<typeof WorkOrderReadyEventSchema>;
+
+const errorInfoSchema = z.object({
+  aws_request_id: z.string(),
+  log_stream_name: z.string(),
+  datetime: z.string().datetime(), // datetime validation
+  stage: z.string(),
+});
+
+const locationSchemaError = z.object({
+  line: z.number(),
+  column: z.number(),
+  sourceName: z.string().nullable(),
+});
+
+const errorSchema = z.object({
+  path: z.array(z.string()),
+  data: z.any().nullable(),
+  errorType: z.string(),
+  errorInfo: errorInfoSchema,
+  locations: z.array(locationSchemaError),
+  message: z.string(),
+});
+
+const responseSchemaError = z.object({
+  data: z.any().nullable(),
+  errors: z.array(errorSchema),
+  status: z.number(),
+  headers: z.object({}).passthrough(), // Allow any additional header properties
+});
+
+const jobInputSchema = z.object({
+  externalId: z.string(),
+  assigneeIds: z.array(z.string()),
+  jobLocation: z.string(),
+  customerName: z.string(),
+  workOrderNumber: z.string(),
+});
+
+const requestSchema = z.object({
+  query: z.string(),
+  variables: z.object({
+    input: z.object({
+      newJob: jobInputSchema,
+    }),
+  }),
+});
+
+export const mainSchemaError = z.object({
+  response: responseSchemaError,
+  request: requestSchema,
+});

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   WorkOrderReadyEvent as WorkOrderProps,
   WorkOrderReadyEventSchema,
+  mainSchemaError,
 } from './types';
 import {
   getSdk,
@@ -59,7 +60,10 @@ export const createJob = async (
   const result = WorkOrderReadyEventSchema.safeParse(workOrder);
 
   if (!result.success) {
-    throw new Error('Invalid work order');
+    throw new Error(
+      'Invalid work order' +
+        result.error.errors.map((e) => e.message).join(', '),
+    );
   }
 
   const mappedData = {
@@ -73,13 +77,13 @@ export const createJob = async (
   const validation = workOrderSchema.safeParse(mappedData);
 
   if (!validation.success) {
-    console.error('Validation errors:', validation.error.format());
-    throw new Error('Invalid work order data');
+    throw new Error(
+      'Invalid work order data' +
+        validation.error.errors.map((e) => e.message).join(', '),
+    );
   }
 
   return async (sdk: SDKProps): Promise<Job> => {
-    console.log('Job created', mappedData);
-
     const input: CreateJobInput = {
       newJob: mappedData,
     };
@@ -89,9 +93,35 @@ export const createJob = async (
       console.error('Input validation errors:', inputValidation.error.format());
       throw new Error('Invalid job input data');
     }
-    const result = await sdk.CreateJob({ input });
-    //TODO: add validation for the result using Zod
-    return result.createJob.job;
+
+    try {
+      const result = await sdk.CreateJob({ input });
+
+      //TODO: add validation for the result using Zod
+      return result.createJob.job;
+    } catch (error) {
+      const validation = mainSchemaError.safeParse(error);
+
+      if (validation.success) {
+        // If the error matches the GraphQL error structure, process the errors
+        validation.data.response?.errors?.forEach(
+          (graphQLError, index: number) => {
+            console.log(`Error #${index + 1}:`);
+            console.log('Message:', graphQLError.message);
+            console.log('Path:', graphQLError.path);
+            console.log('Error Type:', graphQLError.errorType);
+            console.log('Error Info:', graphQLError.errorInfo);
+            console.log('Locations:', graphQLError.locations);
+            console.log('---');
+          },
+        );
+      } else {
+        // If the error doesn't match the expected structure, print the default error message
+        console.log('Error message:', (error as Error).message);
+      }
+
+      throw error;
+    }
   };
 };
 
@@ -119,29 +149,52 @@ export const createJobShare = async (
         shareEntireJobValidation.error.errors.map((e) => e.message).join(', '),
     );
   }
-  console.log('Creating custom job share', jobIds);
-  console.log('Creating custom job share', shareEntireJob);
 
-  const input: CreateJobShareInput = { jobIds, shareEntireJob };
-  console.log('Creating custom job share', input);
+  try {
+    const input: CreateJobShareInput = { jobIds, shareEntireJob };
 
-  const result = sdk.CreateJobShare({ input });
-  const validation = CreateJobShareMutationSchema.safeParse(result);
+    const result = await sdk.CreateJobShare({ input });
+    console.log(':::::=====>result:CreateJobShare', result);
+    const validation = CreateJobShareMutationSchema.safeParse(result);
 
-  if (!validation.success) {
-    throw new Error(
-      'Invalid response from CreateJobShare: ' +
-        validation.error.errors.map((e) => e.message).join(', '),
-    );
+    if (!validation.success) {
+      throw new Error(
+        'Invalid response from CreateJobShare: ' +
+          validation.error.errors.map((e) => e.message).join(', '),
+      );
+    }
+
+    const { jobShare } = validation.data.createJobShare;
+
+    if (!jobShare) {
+      throw new Error('JobShare creation failed');
+    }
+
+    return jobShare;
+  } catch (error) {
+    console.error(':::Error creating job share::::');
+    const validation = mainSchemaError.safeParse(error);
+
+    if (validation.success) {
+      // If the error matches the GraphQL error structure, process the errors
+      validation.data.response?.errors?.forEach(
+        (graphQLError, index: number) => {
+          console.log(`Error #${index + 1}:`);
+          console.log('Message:', graphQLError.message);
+          console.log('Path:', graphQLError.path);
+          console.log('Error Type:', graphQLError.errorType);
+          console.log('Error Info:', graphQLError.errorInfo);
+          console.log('Locations:', graphQLError.locations);
+          console.log('---');
+        },
+      );
+    } else {
+      // If the error doesn't match the expected structure, print the default error message
+      console.log('Error message:', (error as Error).message);
+    }
+
+    throw error;
   }
-
-  const { jobShare } = validation.data.createJobShare;
-
-  if (!jobShare) {
-    throw new Error('JobShare creation failed');
-  }
-
-  return jobShare;
 };
 
 export const updateWorkOrderWithXOiShareLink = async () => {

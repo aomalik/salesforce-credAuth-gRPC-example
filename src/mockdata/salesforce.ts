@@ -7,7 +7,7 @@ export const payloadWorkOrder = {
     type: 'TCSNALA_Workorder_XOi__e',
     url: '/services/data/v62.0/sobjects/TCSNALA_Workorder_XOi__e/320686',
   },
-  TCSNALA_Customer_Name__c: 'Kwik Trip',
+  TCSNALA_Customer_Name__c: 'Some Customer',
   TCSNALA_Job_Location_Street__c: '2908 Duluth Highway 120 # 120',
   TCSNALA_XOi_Deep_Link__c:
     'https://tranetechnologies--dpfldsvc.sandbox.my.salesforce.com/0WO7d000000tVFIGA2',
@@ -19,8 +19,8 @@ export const payloadWorkOrder = {
   TCSNALA_Job_Location_State__c: 'GA',
   ReplayId: '320686',
   CreatedDate: '2024-09-13T08:06:52.000+0000',
-  TCSNALA_Technician_Email_Address__c: 'michael.soucy@trane.com',
-  TCSNALA_WorkOrderId__c: '0WO7d000000tVFIGA2',
-  TCSNALA_WorkOrderNumber__c: '6540462',
+  TCSNALA_Technician_Email_Address__c: 'gonzalo.vargas@saasfactory.vc',
+  TCSNALA_WorkOrderId__c: '0WO1d000000tVFIGA2',
+  TCSNALA_WorkOrderNumber__c: 'Some Workorder',
   TCSNALA_Job_Location_City__c: 'DULUTH',
 };
