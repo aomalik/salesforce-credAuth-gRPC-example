@@ -22,7 +22,7 @@ async function run() {
 
     // Subscribe to account change events
     const eventEmitter = await client.subscribe(
-      '/event/WorkOrderCreatedEvent__e',
+      '/event/TCSNALA_Workorder_XOi__e',
     );
 
     // Handle incoming events
@@ -49,22 +49,27 @@ async function run() {
 
       // Safely log event as a JSON string
 
-      // console.log(
-      //   JSON.stringify(
-      //     event,
-      //     (key, value) =>
-      //       /* Convert BigInt values into strings and keep other types unchanged */
-      //       typeof value === 'bigint' ? value.toString() : value,
-      //     2,
-      //   ),
-      // );
+      console.log(
+        JSON.stringify(
+          event,
+          (key, value) =>
+            /* Convert BigInt values into strings and keep other types unchanged */
+            typeof value === 'bigint' ? value.toString() : value,
+          2,
+        ),
+      );
+
       console.log('payloadWorkOrder:', payloadWorkOrder);
       //TODO: replace for event.payload
-      workOrderReadyFlow(payloadWorkOrder);
+      //workOrderReadyFlow(payloadWorkOrder);
     });
   } catch (error) {
     console.error(error);
   }
 }
 
-run();
+//run();
+
+console.log('payloadWorkOrder:', payloadWorkOrder);
+//TODO: replace for event.payload
+workOrderReadyFlow(payloadWorkOrder);

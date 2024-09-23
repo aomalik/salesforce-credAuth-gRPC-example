@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/streamReader.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/streamReader.ts",
+    "event": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/streamReader.ts",
+    "dev": "ts-node src/streamReader.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write ."

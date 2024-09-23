@@ -58,6 +58,7 @@ export const workOrderReadyFlow = async (
       },
     });
 
+    console.log('--->Step 1: Create the job');
     const sdk = getSdk(client);
     //TODO: refactor this to use the core functions
     const request = await createJob(data);
@@ -66,6 +67,7 @@ export const workOrderReadyFlow = async (
     if (!job) {
       throw new Error('Error creating job');
     }
+    console.log('Created job:', job);
 
     const shareClient = new GraphQLClient(gqlShareExternalUrl as string, {
       headers: {
@@ -76,24 +78,30 @@ export const workOrderReadyFlow = async (
     const shareSdk = getSdk(shareClient);
 
     const jobIds = [job.id];
-    console.log('--->Step 1');
-    const entireShare = await createJobShare(jobIds, true, shareSdk);
-    console.log('--->Step 2');
-    if (!entireShare) {
-      throw new Error('EntireShare:Error sharing job');
-    }
-    console.log('--->Step 3');
+
+    console.log('--->Step 2: Create Customer Job Share');
     const customerShare = await createJobShare(jobIds, false, shareSdk);
-    console.log('--->Step 4');
+
     if (!customerShare) {
       throw new Error('CustomerShare: Error sharing job');
     }
 
-    console.log('entireShare:', entireShare);
-    console.log('customerShare:', customerShare);
+    console.log('Created customerShare:', customerShare);
 
+    const entireShare = await createJobShare(jobIds, true, shareSdk);
+
+    console.log('--->Step 3: Create Entire Job Share');
+
+    if (!entireShare) {
+      throw new Error('EntireShare:Error sharing job');
+    }
+
+    console.log('Created entireShare:', entireShare);
+
+    console.log('--->Step 4: Update Work Order with XOi Share Link');
     const instanceAxios = axios.create({
       headers: {
+        baseURL: instanceUrlSF,
         Authorization: `Bearer ${accessTokenSF}`,
         'Content-Type': 'application/json',
       },
@@ -101,11 +109,11 @@ export const workOrderReadyFlow = async (
 
     const requestToSF = await updateWorkOrderWithXOiShareLink(
       {
-        JobId__c: job.id,
-        ContributeToJobDeepLinkUrl__c:
+        Job_ID__c: job.id,
+        Contributor_Deep_Link__c:
           job.deepLinks?.visionMobile?.contributeToJob?.url,
-        EntireJobShareLinkUrl__c: customerShare.shareLink,
-        CustomerJobShareLinkUrl__c: entireShare.shareLink,
+        Share_Link_One__c: customerShare.shareLink,
+        Share_Link_Two__c: entireShare.shareLink,
       },
       instanceAxios,
     );

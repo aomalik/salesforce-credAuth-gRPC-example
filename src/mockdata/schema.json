@@ -1,0 +1,113 @@
+{
+  "type": "record",
+  "name": "TCSNALA_Workorder_XOi__e",
+  "namespace": "com.sforce.eventbus",
+  "fields": [
+    {
+      "name": "CreatedDate",
+      "type": "long",
+      "doc": "CreatedDate:DateTime"
+    },
+    {
+      "name": "CreatedById",
+      "type": "string",
+      "doc": "CreatedBy:EntityId"
+    },
+    {
+      "name": "TCSNALA_Event_Type__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1Y",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_WorkOrderId__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1d",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Technician_Email_Address__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1i",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_WorkOrderNumber__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1n",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_Location_Street__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1s",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_Location_City__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo1x",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_Location_State__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo22",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_Location_PostalCode__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo27",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_Location_Country__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo2C",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_ServiceAppointment_Id__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo2H",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Job_ID__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo2M",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_Customer_Name__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00N7d00000KMo2R",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_XOi_Deep_Link__c",
+      "type": ["null", "string"],
+      "doc": "Data:StringPlusClob:00N7d00000KMo2W",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_WorkOrder_Status__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00NWE000000lqnx",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_SA_Status__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00NWE000000lqpZ",
+      "default": null
+    },
+    {
+      "name": "TCSNALA_SA_Number__c",
+      "type": ["null", "string"],
+      "doc": "Data:Text:00NWE000000lqrB",
+      "default": null
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import { isAxiosError, isError } from '../utils/type-guards';
 import {
   WorkOrderReadyEvent as WorkOrderProps,
   WorkOrderReadyEventSchema,
@@ -13,6 +14,8 @@ import {
   JobShare,
 } from '../generated/graphql';
 
+import 'dotenv/config';
+
 const workOrderSchema = z.object({
   externalId: z.string().nonempty('Work Order ID cannot be empty'), // WorkOrderId__c
   assigneeIds: z.array(z.string().email('Invalid email format')),
@@ -22,15 +25,15 @@ const workOrderSchema = z.object({
 });
 
 const workOrderSchemaToSF = z.object({
-  JobId__c: z.string().nonempty('JobId__c is required'), // JobId must be a non-empty string
-  ContributeToJobDeepLinkUrl__c: z
+  Job_ID__c: z.string().nonempty('JobId__c is required'), // JobId must be a non-empty string
+  Contributor_Deep_Link__c: z
     .string()
     .url('ContributeToJobDeepLinkUrl__c must be a valid URL')
     .optional(), // must be a valid URL
-  EntireJobShareLinkUrl__c: z
+  Share_Link_One__c: z
     .string()
     .url('EntireJobShareLinkUrl__c must be a valid URL'), // must be a valid URL
-  CustomerJobShareLinkUrl__c: z
+  Share_Link_Two__c: z
     .string()
     .url('CustomerJobShareLinkUrl__c must be a valid URL'), // must be a valid URL
 });
@@ -171,7 +174,6 @@ export const createJobShare = async (
     const input: CreateJobShareInput = { jobIds, shareEntireJob };
 
     const result = await sdk.CreateJobShare({ input });
-    console.log(':::::=====>result:CreateJobShare', result);
     const validation = CreateJobShareMutationSchema.safeParse(result);
 
     if (!validation.success) {
@@ -232,10 +234,19 @@ export const updateWorkOrderWithXOiShareLink = async (
   return async (): Promise<void> => {
     console.log('Work order updated:', workOrderSF);
     try {
-      const response = await axiosInstace.patch(
-        `/WorkOrder/${workOrderSF.JobId__c}`,
+      const response = await axios.patch(
+        `${process.env.SALESFORCE_API_URL}/WorkOrder/${workOrderSF.Job_ID__c}`,
         workOrderSF,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.SALESFORCE_ACCESS_TOKEN}`,
+          },
+        },
       );
+      //const response = await axiosInstace.patch(
+      //  `/WorkOrder/${workOrderSF.Job_ID__c}`,
+      //  workOrderSF,
+      //);
 
       if (response.status === 204) {
         console.log('WorkOrder updated successfully in Salesforce');
@@ -246,8 +257,35 @@ export const updateWorkOrderWithXOiShareLink = async (
         );
       }
     } catch (error) {
-      console.error('::::::::Error updating work order in Salesforce:', error);
-      throw error;
+      console.log('====:::::Error::::=========');
+      if (isAxiosError(error)) {
+        console.error('Axios error:', error.message);
+
+        if (error.config) {
+          console.error('Request URL:', error.config.url); // Accessing the URL from the config
+          console.error('Request method:', error.config.method); // Accessing the method of the request
+          console.error('Request data:', error.config.data); // Accessing the request data (if any)
+        }
+        // Additional Axios error handling if needed
+        if (error.response) {
+          console.error('Response data:', error.response.data);
+        }
+      } else if (isError(error)) {
+        console.error(
+          'Error updating work order in Salesforce:',
+          error.message,
+        );
+
+        // Check if it's a URL issue
+        if (error.message.includes('Invalid URL')) {
+          console.error('There seems to be an invalid URL in the request.');
+        }
+      } else {
+        // Handle the case where the error is of unknown type
+        console.error('An unexpected error occurred:', error);
+      }
+
+      throw new Error('Failed to update WorkOrder in Salesforce');
     }
   };
 };

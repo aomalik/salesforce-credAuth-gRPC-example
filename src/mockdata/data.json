@@ -1,0 +1,15 @@
+{
+  "CreatedDate": 1694523600000,
+  "CreatedById": "0051N000003123A",
+  "TCSNALA_Event_Type__c": "XOi:WorkorderReady",
+  "TCSNALA_WorkOrderId__c": "0WO7d000000tVFIGA2",
+  "TCSNALA_Technician_Email_Address__c": "gonzalo.vargas@saasfactory.vc",
+  "TCSNALA_WorkOrderNumber__c": "Some Workorder",
+  "TCSNALA_Customer_Name__c": "Some Customer",
+  "TCSNALA_Job_Location_Street__c": "2908 Duluth Highway 120 # 120",
+  "TCSNALA_Job_Location_City__c": "DULUTH",
+  "TCSNALA_Job_Location_State__c": "GA",
+  "TCSNALA_Job_Location_PostalCode__c": "30096",
+  "TCSNALA_Job_Location_Country__c": "United States",
+  "TCSNALA_XOi_Deep_Link__c": "https://tranetechnologies--dpfldsvc.sandbox.my.salesforce.com/0WO7d000000tVFIGA2"
+}
